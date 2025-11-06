@@ -3,128 +3,108 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zahra Album Access - Debug</title>
+<title>Zahra Album Access</title>
 <style>
-body { font-family: sans-serif; background: linear-gradient(160deg,#fff7f9 0%,#f0f9ff 100%); text-align:center; padding-top:10vh; color:#333; }
-.container { background:white; display:inline-block; padding:20px 30px; border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,0.08); direction:ltr; }
-input { padding:10px; font-size:16px; border-radius:8px; border:1px solid #aaa; width:90%; margin:8px 0; }
-button { padding:10px 16px; font-size:15px; border:none; border-radius:8px; cursor:pointer; margin:6px; }
-button.enter { background:#4CAF50; color:#fff; }
-button.change { background:#2196F3; color:#fff; }
-button.reset { background:#e91e63; color:#fff; }
-small { display:block; margin-top:8px; color:#666; }
-#savedMasked { font-weight:700; color:#444; margin-bottom:6px; }
-#msg { color:red; min-height:18px; margin-top:8px; }
+body {
+  font-family: sans-serif;
+  background: linear-gradient(160deg, #fff7f9 0%, #f0f9ff 100%);
+  text-align: center;
+  padding-top: 20vh;
+  color: #333;
+}
+.container {
+  background: white;
+  display: inline-block;
+  padding: 25px 40px;
+  border-radius: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+input {
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 10px;
+  border: 1px solid #aaa;
+  width: 80%;
+  text-align: center;
+  margin-bottom: 10px;
+}
+button {
+  padding: 10px 20px;
+  font-size: 15px;
+  border: none;
+  background: #4CAF50;
+  color: white;
+  border-radius: 10px;
+  cursor: pointer;
+  margin: 5px;
+}
+button.change {
+  background: #2196F3;
+}
+h2 {
+  color: #ff4081;
+}
+p#msg {
+  color: red;
+  font-size: 14px;
+}
 </style>
 </head>
 <body>
-  <div class="container" dir="rtl">
-    <h3>🔧 ورود (نسخهٔ تشخیصی)</h3>
-    <div id="savedMasked">Saved password: <span id="savedVal">(loading)</span></div>
+  <div class="container">
+    <h2>🌸 Welcome to Zahra's Album 🌸</h2>
     <input id="pass" type="password" placeholder="Enter current password"><br>
-    <button class="enter" onclick="checkPass()">Enter</button>
-    <hr style="margin:12px 0; opacity:0.3;">
+    <button onclick="checkPass()">Enter</button>
+    <hr style="margin:15px 0; opacity:0.3;">
     <input id="newpass" type="password" placeholder="New password (optional)">
     <button class="change" onclick="changePass()">Change Password</button>
-    <div style="margin-top:10px">
-      <button class="reset" onclick="resetToDefault()">Reset to default (ramz1234)</button>
-    </div>
     <p id="msg"></p>
-    <small>Debug info: open browser Console (F12 یا Inspect → Console) to see logs.</small>
   </div>
 
-<script>
-const defaultPass = "ramz1234";
-function readSaved() {
-  try {
-    return localStorage.getItem("zahraPass");
-  } catch(e) {
-    console.error("Can't access localStorage:", e);
-    return null;
-  }
-}
-function mask(s) {
-  if (s === null) return "(not set)";
-  if (s.length === 0) return "(empty)";
-  // show first and last char masked
-  if (s.length <= 2) return "*".repeat(s.length);
-  return s[0] + "*".repeat(Math.max(0, s.length-2)) + s[s.length-1];
-}
-function refreshSavedDisplay() {
-  const saved = readSaved();
-  const display = saved === null ? defaultPass : saved;
-  // show masked so password not fully visible
-  document.getElementById("savedVal").innerText = mask(display) + (saved === null ? " (using default)" : "");
-  console.log("DEBUG: localStorage zahraPass raw =", saved);
-}
-refreshSavedDisplay();
+  <script>
+    const defaultPass = "ramz1234";
+    let savedPass = localStorage.getItem("zahraPass") || defaultPass;
 
-function checkPass() {
-  const entered = document.getElementById("pass").value.trim();
-  const msg = document.getElementById("msg");
-  const saved = readSaved() || defaultPass;
-  console.log("DEBUG checkPass: entered=", entered, " saved=", saved);
+    function checkPass() {
+      const entered = document.getElementById("pass").value.trim();
+      const msg = document.getElementById("msg");
 
-  if (entered === saved) {
-    msg.style.color = "green";
-    msg.innerText = "✅ Access granted! Loading album...";
-    // Use absolute URL to avoid relative path issues on GitHub Pages
-    setTimeout(() => {
-      window.location.href = "https://ahmadjavan.github.io/zahra-album/album/index.html";
-    }, 700);
-  } else {
-    msg.style.color = "red";
-    msg.innerText = "❌ Wrong password!";
-  }
-}
+      if (entered === savedPass) {
+        msg.style.color = "green";
+        msg.innerText = "✅ Access granted! Loading album...";
+        setTimeout(() => {
+          window.location.href = "album/index.html"; // ✅ مسیر درست برای GitHub Pages
+        }, 700);
+      } else {
+        msg.style.color = "red";
+        msg.innerText = "❌ Wrong password!";
+      }
+    }
 
-function changePass() {
-  const current = document.getElementById("pass").value.trim();
-  const newpass = document.getElementById("newpass").value.trim();
-  const msg = document.getElementById("msg");
-  const saved = readSaved() || defaultPass;
-  console.log("DEBUG changePass: current=", current, " saved=", saved, " newpass=", newpass);
+    function changePass() {
+      const current = document.getElementById("pass").value.trim();
+      const newpass = document.getElementById("newpass").value.trim();
+      const msg = document.getElementById("msg");
 
-  if (current !== saved) {
-    msg.style.color = "red";
-    msg.innerText = "❌ Enter your correct current password first!";
-    return;
-  }
-  if (newpass.length < 3) {
-    msg.style.color = "red";
-    msg.innerText = "⚠️ New password must be at least 3 characters.";
-    return;
-  }
+      // must know current password
+      if (current !== savedPass) {
+        msg.style.color = "red";
+        msg.innerText = "❌ Enter your correct current password first!";
+        return;
+      }
 
-  try {
-    localStorage.setItem("zahraPass", newpass);
-  } catch(e) {
-    console.error("Can't write localStorage:", e);
-    msg.style.color = "red";
-    msg.innerText = "⚠️ Can't save password to localStorage (check browser privacy settings).";
-    return;
-  }
-  refreshSavedDisplay();
-  msg.style.color = "green";
-  msg.innerText = "✅ Password successfully changed!";
-  document.getElementById("newpass").value = "";
-}
+      if (newpass.length < 3) {
+        msg.style.color = "red";
+        msg.innerText = "⚠️ New password must be at least 3 characters.";
+        return;
+      }
 
-function resetToDefault() {
-  try {
-    localStorage.removeItem("zahraPass");
-    // if you want, explicitly set to default:
-    // localStorage.setItem("zahraPass", defaultPass);
-    refreshSavedDisplay();
-    document.getElementById("msg").style.color = "green";
-    document.getElementById("msg").innerText = "✅ Reset done. Now default is used (ramz1234).";
-    console.log("DEBUG: Reset localStorage zahraPass");
-  } catch(e) {
-    console.error("Can't clear localStorage:", e);
-    document.getElementById("msg").style.color = "red";
-    document.getElementById("msg").innerText = "⚠️ Can't clear localStorage (see console).";
-  }
-}
-</script>
+      localStorage.setItem("zahraPass", newpass);
+      savedPass = newpass;
+      msg.style.color = "green";
+      msg.innerText = "✅ Password successfully changed!";
+      document.getElementById("newpass").value = "";
+    }
+  </script>
 </body>
 </html>
